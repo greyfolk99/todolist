@@ -1,33 +1,33 @@
 package com.greyfolk99.todolist.mapper.impl;
 
+import com.greyfolk99.todolist.mapper.ToDoMapper;
 import com.greyfolk99.todolist.mapper.UserMapper;
 import com.greyfolk99.todolist.model.entity.User;
-import com.greyfolk99.todolist.model.network.request.UserRegisterRequest;
-import com.greyfolk99.todolist.model.network.response.UserResponse;
-import org.mapstruct.factory.Mappers;
+import com.greyfolk99.todolist.model.request.NewUserRequest;
+import com.greyfolk99.todolist.model.response.UserResponse;
+import lombok.NoArgsConstructor;
 
+import java.util.stream.Collectors;
+
+@NoArgsConstructor
 public class UserMapperImpl implements UserMapper {
-
-    UserMapper INSTANCE = Mappers.getMapper( UserMapper.class );
-
     @Override
-    public User toRegister(UserRegisterRequest request) {
-        if (request == null) return null;
+    public User toRegister(NewUserRequest request) {
         return User.builder()
                 .email(request.getEmail())
                 .password(request.getPassword())
                 .nickname(request.getNickname())
-                .phone(request.getPhone())
                 .build();
     }
-
     @Override
-    public UserResponse response(User user) {
+    public UserResponse toResponse(User user) {
         return UserResponse.builder()
+                .userId(user.getUserId())
                 .email(user.getEmail())
-                .password(user.getPassword())
                 .nickname(user.getNickname())
-                .toDoList(user.getToDoList())
+                .toDoList(user.getToDoList()
+                        .stream().map(toDo-> ToDoMapper.INSTANCE.toResponse(toDo))
+                        .collect(Collectors.toList()))
                 .build();
     }
 }
