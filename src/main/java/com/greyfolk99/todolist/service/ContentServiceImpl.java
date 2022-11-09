@@ -12,6 +12,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ContentServiceImpl implements ContentService{
@@ -42,5 +45,13 @@ public class ContentServiceImpl implements ContentService{
         content = contentRepository.save(content);
         LOGGER.info("[updateContent] Save content -> content : {}", content.toString());
         return response(content);
+    }
+
+    @Override
+    public List<ContentResponse> selectAllContent(Long toDoId) {
+        List<Content> contents = contentRepository.findByToDoId(toDoId);
+        LOGGER.info("[selectAllContent] Find toDoId -> found {} data", contents.size());
+        if(contents.isEmpty()) throw new NoDataFoundException("No data found with to-do id");
+        return contents.stream().map(this::response).collect(Collectors.toList());
     }
 }

@@ -24,7 +24,6 @@ public class Content extends BaseEntity {
     @ToString.Exclude
     private ToDo toDo;
 
-
     @Builder
     public Content(Long contentId, Integer orderNo, String context, ToDo toDo, Long toDoId) {
         this.contentId = contentId;
